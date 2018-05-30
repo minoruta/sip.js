@@ -681,7 +681,6 @@ function makeWsTransport(options, callback) {
   function makeClient(uri) {
     if(clients[uri]) return clients[uri]();
 
-    var socket = new WebSocket(uri, 'sip', {procotol: 'sip'}),
     // var socket = new WebSocket(uri, 'sip', {procotol: 'sip'}),
     //     queue = [],
     //     refs = 0;
@@ -690,7 +689,6 @@ function makeWsTransport(options, callback) {
     function send_open(m) { socket.send(new Buffer(typeof m === 'string' ? m : stringify(m), 'binary')); }
     var send = send_connecting;
 
-    socket.on('open', function() { 
     // socket.on('open', function() {
     //   init(socket);
     //   send = send_open;
@@ -699,12 +697,10 @@ function makeWsTransport(options, callback) {
 
     function open(onError) {
       ++refs;
-      if(onError) socket.on('error', onError);
       // if(onError) socket.on('error', onError);
       return {
         send: function(m) { send(m); },
         release: function() {
-          if(onError) socket.removeListener('error', onError);
           // if(onError) socket.removeListener('error', onError);
           // if(--refs === 0) socket.terminate();
         },
@@ -715,7 +711,6 @@ function makeWsTransport(options, callback) {
     return clients[uri] = open;
   }
 
-  if(options.ws_port) {
   // if(options.ws_port) {
   //   if(options.tls) {
   //     var http = require('https');
