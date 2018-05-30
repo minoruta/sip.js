@@ -814,7 +814,6 @@ function makeTransport(options, callback) {
     protocols.TCP = makeTcpTransport(options, callbackAndLog);
   if(options.tls)
     protocols.TLS = makeTlsTransport(options, callbackAndLog);
-  if(options.ws_port && WebSocket)
   // if(options.ws_port && WebSocket)
   //   protocols.WS = makeWsTransport(options, callbackAndLog);
 
