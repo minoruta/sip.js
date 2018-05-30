@@ -6,7 +6,7 @@ var dgram = require('dgram');
 var tls = require('tls');
 var os = require('os');
 var crypto = require('crypto');
-var WebSocket = require('uws');
+// var WebSocket = require('uws');
 
 function debug(e) {
   if(e.stack) {
@@ -682,27 +682,31 @@ function makeWsTransport(options, callback) {
     if(clients[uri]) return clients[uri]();
 
     var socket = new WebSocket(uri, 'sip', {procotol: 'sip'}),
-        queue = [],
-        refs = 0;
-    
+    // var socket = new WebSocket(uri, 'sip', {procotol: 'sip'}),
+    //     queue = [],
+    //     refs = 0;
+
     function send_connecting(m) { queue.push(stringify(m)); }
     function send_open(m) { socket.send(new Buffer(typeof m === 'string' ? m : stringify(m), 'binary')); }
     var send = send_connecting;
 
     socket.on('open', function() { 
-      init(socket); 
-      send = send_open;
-      queue.splice(0).forEach(send);
-    });
+    // socket.on('open', function() {
+    //   init(socket);
+    //   send = send_open;
+    //   queue.splice(0).forEach(send);
+    // });
 
     function open(onError) {
       ++refs;
       if(onError) socket.on('error', onError);
+      // if(onError) socket.on('error', onError);
       return {
         send: function(m) { send(m); },
         release: function() {
           if(onError) socket.removeListener('error', onError);
-          if(--refs === 0) socket.terminate();
+          // if(onError) socket.removeListener('error', onError);
+          // if(--refs === 0) socket.terminate();
         },
         protocol: 'WS'
       };
@@ -712,21 +716,22 @@ function makeWsTransport(options, callback) {
   }
 
   if(options.ws_port) {
-    if(options.tls) {
-      var http = require('https');
-      var server = new WebSocket.Server({
-          server: http.createServer(options.tls, function(rq,rs) { 
-            rs.writeHead(200);
-            rs.end("");
-          }).listen(options.ws_port)
-      });
-    } 
-    else {
-      var server = new WebSocket.Server({port:options.ws_port});
-    }
-
-    server.on('connection',init);
-  }
+  // if(options.ws_port) {
+  //   if(options.tls) {
+  //     var http = require('https');
+  //     var server = new WebSocket.Server({
+  //         server: http.createServer(options.tls, function(rq,rs) {
+  //           rs.writeHead(200);
+  //           rs.end("");
+  //         }).listen(options.ws_port)
+  //     });
+  //   }
+  //   else {
+  //     var server = new WebSocket.Server({port:options.ws_port});
+  //   }
+  //
+  //   server.on('connection',init);
+  // }
 
   function get(flow) {
     var ws = flows[[flow.address, flow.port, flow.local.address, flow.local.port].join()];
@@ -815,7 +820,8 @@ function makeTransport(options, callback) {
   if(options.tls)
     protocols.TLS = makeTlsTransport(options, callbackAndLog);
   if(options.ws_port && WebSocket)
-    protocols.WS = makeWsTransport(options, callbackAndLog);
+  // if(options.ws_port && WebSocket)
+  //   protocols.WS = makeWsTransport(options, callbackAndLog);
 
   function wrap(obj, target) {
     return Object.create(obj, {send: {value: function(m) {
